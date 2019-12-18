@@ -11,8 +11,8 @@ import java.util.concurrent.Executor;
 
 @org.springframework.context.annotation.Configuration
 @EnableAsync
-public class Configuration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+public class AsyncConfiguration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfiguration.class);
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
         LOGGER.debug("Creating Async Task Executor");
