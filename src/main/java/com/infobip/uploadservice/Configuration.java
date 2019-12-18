@@ -11,6 +11,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class Configuration {
 
+    // Ovo je Excecutor u kojem se definiraju parametri za threadove kojeg koristim u kontroleru (UploadController) za pokretanje threadova
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -22,6 +23,7 @@ public class Configuration {
         return executor;
     }
 
+    // Ovo zamjenjuje Springov defaultni resolver za upload fileova sa Apache Commonsovim FileUpload-om jer on podržava upload velikih fajlova i druge razne stvari
     @Bean
     public CommonsMultipartResolver multipartResolver() {
 

@@ -30,8 +30,6 @@ import java.util.concurrent.Executor;
 @RequestMapping("/api/v1/upload")
 public class UploadController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
-
     private Executor executor;
     private Map<String, Long> duration = new HashMap<>();
 
@@ -69,6 +67,7 @@ public class UploadController {
 
     @GetMapping("/progress")
     public ResponseEntity uploadProgress() {
+        // Tu bi trebao za svaki fajl ispisivati količinu trenutno prenesenih byteova
         return ResponseEntity.ok().build();
     }
 
