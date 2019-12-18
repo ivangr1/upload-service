@@ -1,5 +1,12 @@
 package com.infobip.uploadservice;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,14 +39,13 @@ public class UploadController {
     public UploadController(Executor executor) { this.executor = executor; }
 
     @PostMapping
-    public @ResponseBody ResponseEntity uploadFiles(@RequestParam("files") MultipartFile[] files, final HttpServletRequest httpServletRequest) {
-        String fileName = httpServletRequest.getHeader("X-Upload-File");
+    public @ResponseBody ResponseEntity uploadFiles(@RequestParam("files") MultipartFile[] files) {
         final long start = System.currentTimeMillis();
         Set<String> fileNames = new HashSet<>();
         try {
             for (final MultipartFile file : files) {
                 String filename = StringUtils.cleanPath(file.getOriginalFilename());
-                if(fileNames.contains(fileName))
+                if(fileNames.contains(filename))
                     continue;
                 else
                     fileNames.add(filename);
