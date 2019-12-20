@@ -26,14 +26,17 @@ public class UploadController {
         final long start = System.currentTimeMillis();
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         if(!isMultipart) ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+
         String fileName = request.getHeader("X-Upload-File");
         String contentLength = request.getHeader("Content-Length");
         String fileId = String.format("%s-%d", fileName, start);
+        
         Map<String, Object> progress = new TreeMap<>();
         progress.put("id", fileId);
         progress.put("size", Integer.parseInt(contentLength));
         progress.put("uploaded", 0);
         progressMap.put(fileId, progress);
+
         try {
             ServletFileUpload servletFileUpload = new ServletFileUpload();
             servletFileUpload.setProgressListener(new ProgressListener() {
