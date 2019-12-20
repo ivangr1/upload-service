@@ -25,7 +25,7 @@ public class UploadController {
     public ResponseEntity uploadFiles(final HttpServletRequest request) {
         final long start = System.currentTimeMillis();
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-        if(!isMultipart) ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE);
+        if(!isMultipart) ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         String fileName = request.getHeader("X-Upload-File");
         String contentLength = request.getHeader("Content-Length");
         String fileId = String.format("%s-%d", fileName, start);
