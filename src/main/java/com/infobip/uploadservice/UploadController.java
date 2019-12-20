@@ -21,13 +21,8 @@ import java.util.concurrent.Executor;
 @RequestMapping("/api/v1/upload")
 public class UploadController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
-    private Executor executor;
     private Map<String, Long> duration = new HashMap<>();
     private Map<String, Map<String, Object>> progressMap = new HashMap<>();
-
-    @Autowired
-    public UploadController(Executor executor) { this.executor = executor; }
 
     @PostMapping
     public ResponseEntity uploadFiles(final HttpServletRequest request) {
@@ -72,14 +67,14 @@ public class UploadController {
     @GetMapping("/progress")
     public Map<String, Object> uploadProgress() {
         Map<String, Object> map = new HashMap<>();
-        map.put("uploads", new ArrayList<>(this.progressMap.values()).toArray());
+        map.put("uploads", new ArrayList<>(this.progressMap.values()));
         return map;
     }
 
     @GetMapping("/duration")
-    public List<String> uploadDuration() {
-        List<String> duration = new ArrayList<>();
-        this.duration.forEach((filename, dur) -> duration.add(String.format("upload_duration{id=”%s”} %d", filename, dur)));
-        return duration;
+    public Map<String, Map<String, Long>> uploadDuration() {
+        Map<String, Map<String, Long>> map = new HashMap<>();
+        map.put("upload_duration", duration);
+        return map;
     }
 }
