@@ -19,7 +19,7 @@ import java.util.*;
 public class UploadController {
 
     private Map<String, Long> duration = new HashMap<>();
-    private Map<String, Map<String, Object>> progressMap = new HashMap<>();
+    private Map<String, Map<String, Object>> progress = new HashMap<>();
 
     @PostMapping
     public ResponseEntity uploadFiles(final HttpServletRequest request) {
@@ -30,12 +30,12 @@ public class UploadController {
         String fileName = request.getHeader("X-Upload-File");
         String contentLength = request.getHeader("Content-Length");
         String fileId = String.format("%s-%d", fileName, start);
-        
+
         Map<String, Object> progress = new TreeMap<>();
         progress.put("id", fileId);
         progress.put("size", Integer.parseInt(contentLength));
         progress.put("uploaded", 0);
-        progressMap.put(fileId, progress);
+        this.progress.put(fileId, progress);
 
         try {
             ServletFileUpload servletFileUpload = new ServletFileUpload();
@@ -49,10 +49,10 @@ public class UploadController {
                     }
                     megaBytes = mBytes;
                     if (bytesRead == bytesTotal) {
-                        UploadController.this.progressMap.remove(fileId);
+                        UploadController.this.progress.remove(fileId);
                         UploadController.this.duration.put(fileId, (System.currentTimeMillis() - start));
                     } else
-                        UploadController.this.progressMap.get(fileId).replace("uploaded", bytesRead);
+                        UploadController.this.progress.get(fileId).replace("uploaded", bytesRead);
                 }
             });
             FileItemIterator iterStream = servletFileUpload.getItemIterator(request);
@@ -76,7 +76,7 @@ public class UploadController {
     @GetMapping("/progress")
     public Map<String, Object> uploadProgress() {
         Map<String, Object> map = new HashMap<>();
-        map.put("uploads", new ArrayList<>(this.progressMap.values()));
+        map.put("uploads", new ArrayList<>(this.progress.values()));
         return map;
     }
 
