@@ -25,17 +25,19 @@ public class UploadController {
     public ResponseEntity uploadFiles(final HttpServletRequest request) {
         final long start = System.currentTimeMillis();
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-        if(!isMultipart) ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        if(!isMultipart)
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
 
         String fileName = request.getHeader("X-Upload-File");
         String contentLength = request.getHeader("Content-Length");
         String fileId = String.format("%s-%d", fileName, start);
-
+        if(this.progress.containsKey(fileName))
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         Map<String, Object> progress = new TreeMap<>();
         progress.put("id", fileId);
         progress.put("size", Integer.parseInt(contentLength));
         progress.put("uploaded", 0);
-        this.progress.put(fileId, progress);
+        this.progress.put(fileName, progress);
 
         try {
             ServletFileUpload servletFileUpload = new ServletFileUpload();
@@ -49,10 +51,10 @@ public class UploadController {
                     }
                     megaBytes = mBytes;
                     if (bytesRead == bytesTotal) {
-                        UploadController.this.progress.remove(fileId);
+                        UploadController.this.progress.remove(fileName);
                         UploadController.this.duration.put(fileId, (System.currentTimeMillis() - start));
                     } else
-                        UploadController.this.progress.get(fileId).replace("uploaded", bytesRead);
+                        UploadController.this.progress.get(fileName).replace("uploaded", bytesRead);
                 }
             });
             FileItemIterator iterStream = servletFileUpload.getItemIterator(request);
